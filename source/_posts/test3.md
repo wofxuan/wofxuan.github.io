@@ -1,8 +1,12 @@
 ---
-title: {{ title }}
-date: {{ date }}
-categories: [[分类1], [分类2]]
-tags: [标签1, 标签2]
+title: test3
+categories:
+  - - 分类1
+  - - 分类2
+tags:
+  - 标签1
+  - 标签2
+date: 2023-02-22 17:49:50
 ---
 # 我的需求：
 + 项目中遇到的`什么Bug`需要解决，遇到的`哪一类技术难点`需要攻克<font color="#C0C4CC">[这里写一些为啥要整理这部分笔记，整理博客的前因后果]</font>
@@ -35,8 +39,6 @@ public static MultipartFile getMultipartFile(InputStream inputStream, String fil
 }
 ```
 ## 二级标题
->一个引用
->>一个引用
 ### 三级标题
 #### 四级标题
 ##### <font color="#C0C4CC">五级标题</font>
