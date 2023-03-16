@@ -1,5 +1,5 @@
 ---
-title: 测试一
+title: hexo教程
 date: 2023-02-20 13:31:04
 categories: [模板]
 tags: [模板]
