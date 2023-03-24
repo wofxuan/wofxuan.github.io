@@ -67,7 +67,7 @@ date: 2023-02-23 17:15:00
     ]
   }
 }
-``` 
+```
 直接复制配置即可使用，id就是上面第二步获取的用户id，也可以是自己生成的UUID
 ## 启动V2Ray
 在首次安装完成之后，V2Ray不会自动启动，需要手动运行上述启动命令。而在已经运行V2Ray的VPS上再次执行安装脚本，安装脚本会自动停止V2Ray 进程，升级V2Ray程序，然后自动运行V2Ray。在升级过程中，配置文件不会被修改。
@@ -115,10 +115,28 @@ RestartPreventExitStatus=23
 
 [Install]
 WantedBy=multi-user.target
-``` 
+```
 
 执行
 systemctl daemon-reload
 systemctl restart v2ray
+
+快速管理命令
+v2ray info 查看 V2Ray 配置信息
+v2ray config 修改 V2Ray 配置
+v2ray link 生成 V2Ray 配置文件链接
+v2ray infolink 生成 V2Ray 配置信息链接
+v2ray qr 生成 V2Ray 配置二维码链接
+v2ray ss 修改 Shadowsocks 配置
+v2ray ssinfo 查看 Shadowsocks 配置信息
+v2ray ssqr 生成 Shadowsocks 配置二维码链接
+v2ray status 查看 V2Ray 运行状态
+v2ray start 启动 V2Ray
+v2ray stop 停止 V2Ray
+v2ray restart 重启 V2Ray
+v2ray log 查看 V2Ray 运行日志
+v2ray update 更新 V2Ray
+v2ray update.sh 更新 V2Ray 管理脚本
+v2ray uninstall 卸载 V2Ray
 
 参考：http://loonlog.com/2020/10/5/v2ray-server-new/
