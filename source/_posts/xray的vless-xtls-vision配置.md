@@ -38,6 +38,7 @@ chown -R nobody:nogroup /etc/ssl/private/
 ## 获取用户ID
 之前的脚本，不用手动配置脚本即可使用，现在使用以上脚本，需要自己配置config.json文件，首先获取用户ID，运用指令：
 >cat /proc/sys/kernel/random/uuid 
+
 创建一个用户 id ，并记住这个id号；
 ``` 
 [root@xxxx ~]# cat /proc/sys/kernel/random/uuid 
@@ -207,17 +208,60 @@ http {
 }
 ```
 因为在Nginx中使用了SSL，sub_filter，set_real_ip_from等模块，如果当时安置Nginx时没有编译相关模块，就要添加对应的模块：
-j进入Nginx的安置目录，执行命令，查看已经安置的模块
+进入Nginx的安置目录，执行命令，查看已经安置的模块
 >.\nginx -V
+
 如果没有包含对应的模块，进入Nginx源码目录，执行
 >./configure --prefix=/usr/local/nginx --with-http_sub_module --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-http_realip_module
+
 编译【特别注意】这里不要进行make install，否则就是覆盖你之前的安装
 >make
+
 备份原有已安装好的nginx
 >cp /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.bak
+
 将刚刚编译好的nginx覆盖掉原有的nginx（这个时候【特别注意】这里nginx要停止状态）
 >cp ./objs/nginx /usr/local/nginx/sbin/
-启动nginx，仍可以通过命令查看是否已经加入成功
+
+启动nginx，仍可以通过命令查看是否已经加入成功。
+通过官网的Nginx配置是不能访问到网页的，我们也修改下，让通过端口能够访问到网页
+### 下载伪装网站及部署
+默认的网站主程序文件夹在 /usr/share/nginx/html/ ，大家可以自行的替换里面的任何东西（整站程序）
+```
+rm -rf /usr/share/nginx/html/*
+cd /usr/share/nginx/html/
+wget https://github.com/V2RaySSR/Trojan/raw/master/web.zip
+unzip web.zip
+systemctl restart nginx
+```
+### 修改如以下配置
+证书和通过阿里云或者手动生成
+```
+	server {
+		listen 8001 proxy_protocol;
+		listen 8002 http2 ssl proxy_protocol;
+		listen 443 ssl;
+
+		server_name  域名;
+		#ssl on;
+		#ssl证书的pem文件路径
+		ssl_certificate  /root/ssl/xxx.pem;
+		#ssl证书的key文件路径
+		ssl_certificate_key /root/ssl/xxx.key;
+		location / {
+			root /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+            index index.html index.htm;
+        }
+	}
+	
+	server {
+		listen 0.0.0.0:80;
+		server_name  域名;
+        return 301 https://$host$request_uri;
+    }
+```
+然后重新Nginx
 ## 重启Xray
 + systemctl start xray 启动
 + systemctl stop xray 停止
@@ -237,10 +281,14 @@ j进入Nginx的安置目录，执行命令，查看已经安置的模块
 >firewall-cmd --zone=public --remove-port=8001/tcp --permanent
 
 # 其它
-在生成证书的时候，可能需要停启Nginx和建立对应的目录，如果使用v2rayN作为Windows客户的访问的时候，要记得配置底层传输方式，不然范围不通。
+在生成证书的时候，可能需要停启Nginx和建立对应的目录。
+可以使用xray提供的客户端配置文件去设置v2rayN安置目录里面的config.json，也可以通过图形化接口设置。如果使用v2rayN作为Windows客户的访问的时候，要记得配置底层传输方式，不然范围不通。
 ![示例](./xray的vless-xtls-vision配置/set.png)
 
 参考：
+
+https://v2rayssr.com/xray-nginx.html
+
 https://frank2019.me/articles/2023/01/02/1672622207251.html
 https://acytoo.com/ladder/v2-x-ray/
 https://v2xtls.org/xtls-vision%e4%bb%8b%e7%bb%8d%e5%8f%8a%e5%ae%89%e8%a3%85%e4%bd%bf%e7%94%a8/
