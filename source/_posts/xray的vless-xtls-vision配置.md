@@ -26,6 +26,8 @@ acme.sh --set-default-ca --server letsencrypt
 ### 申请证书+安装证书
 如果提示没有socat，先安置socat
 >yum install socat
+先创建目录
+>mkdir /etc/ssl/private
 生成证书
 ```
 acme.sh --issue -d 域名  --standalone --keylength ec-256
@@ -33,8 +35,27 @@ acme.sh --install-cert -d 域名 --ecc --fullchain-file /etc/ssl/private/fullcha
 chown -R nobody:nogroup /etc/ssl/private/
 ```
 此时在/etc/ssl/private目录下面就有对应的证书了
+如果报错
+```
+[Fri Mar 31 14:21:52 CST 2023] xxx:Verify error:107.148.0.89: Fetching http://xxx/.well-known/acme-challenge/NuPakKeP2DcEHkXVbGdsywXEm755k5IvID3ARecTPAk: Error getting validation data
+[Fri Mar 31 14:21:52 CST 2023] Please add '--debug' or '--log' to check more details.
+[Fri Mar 31 14:21:52 CST 2023] See: https://github.com/acmesh-official/acme.sh/wiki/How-to-debug-acme.sh
+```
+记得开放80端口
 ## 安装脚本
->bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
+安装完成后对应的路径
+```
+installed: /usr/local/bin/xray
+installed: /usr/local/share/xray/geoip.dat
+installed: /usr/local/share/xray/geosite.dat
+installed: /usr/local/etc/xray/config.json
+installed: /var/log/xray/
+installed: /var/log/xray/access.log
+installed: /var/log/xray/error.log
+installed: /etc/systemd/system/xray.service
+installed: /etc/systemd/system/xray@.service
+```
 ## 获取用户ID
 之前的脚本，不用手动配置脚本即可使用，现在使用以上脚本，需要自己配置config.json文件，首先获取用户ID，运用指令：
 >cat /proc/sys/kernel/random/uuid 
@@ -209,7 +230,7 @@ http {
 ```
 因为在Nginx中使用了SSL，sub_filter，set_real_ip_from等模块，如果当时安置Nginx时没有编译相关模块，就要添加对应的模块：
 进入Nginx的安置目录，执行命令，查看已经安置的模块
->.\nginx -V
+>./nginx -V
 
 如果没有包含对应的模块，进入Nginx源码目录，执行
 >./configure --prefix=/usr/local/nginx --with-http_sub_module --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-http_realip_module
@@ -262,6 +283,7 @@ systemctl restart nginx
     }
 ```
 然后重新Nginx
+当然也可以直接通过Nginx转发到其它网站，这个后面在研究。
 ## 重启Xray
 + systemctl start xray 启动
 + systemctl stop xray 停止
