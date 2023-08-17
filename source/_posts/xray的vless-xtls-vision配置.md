@@ -42,6 +42,7 @@ chown -R nobody:nogroup /etc/ssl/private/
 [Fri Mar 31 14:21:52 CST 2023] See: https://github.com/acmesh-official/acme.sh/wiki/How-to-debug-acme.sh
 ```
 记得开放80端口
+# <font color="#F56C6C">生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功</font>
 ## 安装脚本
 >bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
 安装完成后对应的路径
