@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wofxuan.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="原因 因许可理念之争，VLESS和XTLS的作者单独创建了Xray项目，目前是V2ray的超集。xray性能和安全性要更高一些。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xray的vless-xtls-vision配置">
+<meta property="og:url" content="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="格物致知">
+<meta property="og:description" content="原因 因许可理念之争，VLESS和XTLS的作者单独创建了Xray项目，目前是V2ray的超集。xray性能和安全性要更高一些。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/set.png">
+<meta property="og:image" content="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/err1.png">
+<meta property="article:published_time" content="2023-03-24T06:15:00.000Z">
+<meta property="article:modified_time" content="2023-12-26T03:54:17.640Z">
+<meta property="article:author" content="xuan">
+<meta property="article:tag" content="vps">
+<meta property="article:tag" content="服务器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/set.png">
+
+
+<link rel="canonical" href="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/","path":"2023/03/24/xray的vless-xtls-vision配置/","title":"xray的vless-xtls-vision配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>xray的vless-xtls-vision配置 | 格物致知</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">格物致知</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">致知在格物，物格而后知至。</p>
+      <img class="custom-logo-image" src="/uploads/logo.png" alt="格物致知">
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-text">原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">配置服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AF%81%E4%B9%A6"><span class="nav-text">生成证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85acme"><span class="nav-text">安装acme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E8%AF%81%E4%B9%A6-%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="nav-text">申请证书+安装证书</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AF%81%E4%B9%A6%E7%9A%84%E6%9C%89%E6%95%88%E6%9C%9F%E6%98%AF60%E5%A4%A9%EF%BC%8C%E8%BF%87%E6%9C%9F%E5%90%8E%E8%A6%81%E9%87%8D%E6%96%B0%E7%94%9F%E6%88%90%EF%BC%8C%E4%B8%8D%E7%84%B6%E8%AE%BF%E9%97%AE%E4%BB%A3%E7%90%86%E4%B8%8D%E6%88%90%E5%8A%9F"><span class="nav-text">生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC"><span class="nav-text">安装脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7ID"><span class="nav-text">获取用户ID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E4%BC%AA%E8%A3%85%E7%BD%91%E7%AB%99%E5%8F%8A%E9%83%A8%E7%BD%B2"><span class="nav-text">下载伪装网站及部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%A6%82%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE"><span class="nav-text">修改如以下配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%90%AFXray"><span class="nav-text">重启Xray</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-text">打开防火墙</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-text">其它</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuan"
+      src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">xuan</p>
+  <div class="site-description" itemprop="description">天行健，君子以自强不息<br>地势坤，君子以厚德载物</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com" rel="noopener me" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/" title="简书 → https:&#x2F;&#x2F;www.jianshu.com" rel="noopener me" target="_blank">简书</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网1</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网2</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="xuan">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="格物致知">
+      <meta itemprop="description" content="天行健，君子以自强不息<br>地势坤，君子以厚德载物">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="xray的vless-xtls-vision配置 | 格物致知">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          xray的vless-xtls-vision配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-03-24 14:15:00" itemprop="dateCreated datePublished" datetime="2023-03-24T14:15:00+08:00">2023-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-26 11:54:17" itemprop="dateModified" datetime="2023-12-26T11:54:17+08:00">2023-12-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/xray/" itemprop="url" rel="index"><span itemprop="name">xray</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><ul>
+<li>因许可理念之争，VLESS和XTLS的作者单独创建了Xray项目，目前是V2ray的超集。xray性能和安全性要更高一些。</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<h1 id="配置服务器"><a href="#配置服务器" class="headerlink" title="配置服务器"></a>配置服务器</h1><p>环境：服务器系统centos 7 64位</p>
+<h2 id="生成证书"><a href="#生成证书" class="headerlink" title="生成证书"></a>生成证书</h2><h3 id="安装acme"><a href="#安装acme" class="headerlink" title="安装acme"></a>安装acme</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl https://get.acme.sh | sh</span><br><span class="line">ln -s /root/.acme.sh/acme.sh /usr/local/bin/acme.sh</span><br><span class="line">acme.sh --set-default-ca --server letsencrypt</span><br></pre></td></tr></table></figure>
+<h3 id="申请证书-安装证书"><a href="#申请证书-安装证书" class="headerlink" title="申请证书+安装证书"></a>申请证书+安装证书</h3><p>如果提示没有socat，先安置socat</p>
+<blockquote>
+<p>yum install socat<br>先创建目录<br>mkdir /etc/ssl/private<br>生成证书</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名  --standalone --keylength ec-256</span><br><span class="line">acme.sh --install-cert -d 域名 --ecc --fullchain-file /etc/ssl/private/fullchain.cer --key-file /etc/ssl/private/private.key</span><br><span class="line">chown -R nobody:nogroup /etc/ssl/private/</span><br></pre></td></tr></table></figure>
+<p>此时在/etc/ssl/private目录下面就有对应的证书了<br>如果报错</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Fri Mar 31 14:21:52 CST 2023] xxx:Verify error:107.148.0.89: Fetching http://xxx/.well-known/acme-challenge/NuPakKeP2DcEHkXVbGdsywXEm755k5IvID3ARecTPAk: Error getting validation data</span><br><span class="line">[Fri Mar 31 14:21:52 CST 2023] Please add &#x27;--debug&#x27; or &#x27;--log&#x27; to check more details.</span><br><span class="line">[Fri Mar 31 14:21:52 CST 2023] See: https://github.com/acmesh-official/acme.sh/wiki/How-to-debug-acme.sh</span><br></pre></td></tr></table></figure>
+<p>记得开放80端口</p>
+<h1 id="生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功"><a href="#生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功" class="headerlink" title="生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功"></a><font color="#F56C6C">生成证书的有效期是60天，过期后要重新生成，不然访问代理不成功</font></h1><h2 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h2><blockquote>
+<p>bash -c “$(curl -L <a target="_blank" rel="noopener" href="https://github.com/XTLS/Xray-install/raw/main/install-release.sh)&quot;">https://github.com/XTLS/Xray-install/raw/main/install-release.sh)&quot;</a> @ install -u root<br>安装完成后对应的路径</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">installed: /usr/local/bin/xray</span><br><span class="line">installed: /usr/local/share/xray/geoip.dat</span><br><span class="line">installed: /usr/local/share/xray/geosite.dat</span><br><span class="line">installed: /usr/local/etc/xray/config.json</span><br><span class="line">installed: /var/log/xray/</span><br><span class="line">installed: /var/log/xray/access.log</span><br><span class="line">installed: /var/log/xray/error.log</span><br><span class="line">installed: /etc/systemd/system/xray.service</span><br><span class="line">installed: /etc/systemd/system/xray@.service</span><br></pre></td></tr></table></figure>
+<h2 id="获取用户ID"><a href="#获取用户ID" class="headerlink" title="获取用户ID"></a>获取用户ID</h2><p>之前的脚本，不用手动配置脚本即可使用，现在使用以上脚本，需要自己配置config.json文件，首先获取用户ID，运用指令：</p>
+<blockquote>
+<p>cat /proc/sys/kernel/random/uuid </p>
+</blockquote>
+<p>创建一个用户 id ，并记住这个id号；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@xxxx ~]# cat /proc/sys/kernel/random/uuid </span><br><span class="line">08ef6234-dcc0-45d1-9954-f9490cb2beb2</span><br></pre></td></tr></table></figure>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>查看官网<a target="_blank" rel="noopener" href="https://github.com/XTLS/Xray-examples/tree/main/VLESS-TCP-XTLS-Vision%E6%8E%A8%E8%8D%90%E7%9A%84%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%EF%BC%8C%E5%A4%8D%E5%88%B6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%96%87%E4%BB%B6%E5%88%B0%E6%9C%AC%E5%9C%B0%EF%BC%8C%E5%B9%B6%E4%BF%AE%E6%94%B9%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0%E3%80%82">https://github.com/XTLS/Xray-examples/tree/main/VLESS-TCP-XTLS-Vision推荐的配置参数，复制服务端文件到本地，并修改相关参数。</a><br>配置文件路径为：/usr/local/etc/xray/config.json，可以使用“vi”指令创建并打开文本，具体指令如下：</p>
+<blockquote>
+<p>vi /usr/local/etc/xray/config.json</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;log&quot;: &#123;</span><br><span class="line">        &quot;loglevel&quot;: &quot;warning&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;routing&quot;: &#123;</span><br><span class="line">        &quot;domainStrategy&quot;: &quot;IPIfNonMatch&quot;,</span><br><span class="line">        &quot;rules&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;type&quot;: &quot;field&quot;,</span><br><span class="line">                &quot;ip&quot;: [</span><br><span class="line">                    &quot;geoip:cn&quot;</span><br><span class="line">                ],</span><br><span class="line">                &quot;outboundTag&quot;: &quot;block&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;inbounds&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;listen&quot;: &quot;0.0.0.0&quot;, // &quot;0.0.0.0&quot; Indicates listening to both IPv4 and IPv6</span><br><span class="line">            &quot;port&quot;: 443, // The port on which the server listens</span><br><span class="line">            &quot;protocol&quot;: &quot;vless&quot;,</span><br><span class="line">            &quot;settings&quot;: &#123;</span><br><span class="line">                &quot;clients&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;id&quot;: &quot;&quot;, // User ID, perform xray uuid generation, or a string of 1-30 bytes</span><br><span class="line">                        &quot;flow&quot;: &quot;xtls-rprx-vision&quot;</span><br><span class="line">                    &#125;</span><br><span class="line">                ],</span><br><span class="line">                &quot;decryption&quot;: &quot;none&quot;,</span><br><span class="line">                &quot;fallbacks&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;dest&quot;: &quot;8001&quot;,</span><br><span class="line">                        &quot;xver&quot;: 1</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;alpn&quot;: &quot;h2&quot;,</span><br><span class="line">                        &quot;dest&quot;: &quot;8002&quot;,</span><br><span class="line">                        &quot;xver&quot;: 1</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;streamSettings&quot;: &#123;</span><br><span class="line">                &quot;network&quot;: &quot;tcp&quot;,</span><br><span class="line">                &quot;security&quot;: &quot;tls&quot;,</span><br><span class="line">                &quot;tlsSettings&quot;: &#123;</span><br><span class="line">                    &quot;rejectUnknownSni&quot;: true,</span><br><span class="line">                    &quot;minVersion&quot;: &quot;1.2&quot;,</span><br><span class="line">                    &quot;certificates&quot;: [</span><br><span class="line">                        &#123;</span><br><span class="line">                            &quot;ocspStapling&quot;: 3600,</span><br><span class="line">                            &quot;certificateFile&quot;: &quot;/etc/ssl/private/fullchain.cer&quot;, // For the certificate file, it is recommended to use fullchain (full SSL certificate chain). If there is only a website certificate, v2rayN can be used but v2rayNG cannot be used. Usually, the extension is not distinguished</span><br><span class="line">                            &quot;keyFile&quot;: &quot;/etc/ssl/private/private.key&quot; // private key file</span><br><span class="line">                        &#125;</span><br><span class="line">                    ]</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sniffing&quot;: &#123;</span><br><span class="line">                &quot;enabled&quot;: true,</span><br><span class="line">                &quot;destOverride&quot;: [</span><br><span class="line">                    &quot;http&quot;,</span><br><span class="line">                    &quot;tls&quot;</span><br><span class="line">                ]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;outbounds&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;protocol&quot;: &quot;freedom&quot;,</span><br><span class="line">            &quot;tag&quot;: &quot;direct&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;protocol&quot;: &quot;blackhole&quot;,</span><br><span class="line">            &quot;tag&quot;: &quot;block&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;policy&quot;: &#123;</span><br><span class="line">        &quot;levels&quot;: &#123;</span><br><span class="line">            &quot;0&quot;: &#123;</span><br><span class="line">                &quot;handshake&quot;: 2, // The handshake time limit when the connection is established, in seconds, the default value is 4, it is recommended to be different from the default value</span><br><span class="line">                &quot;connIdle&quot;: 120 // Connection idle time limit in seconds, the default value is 300, it is recommended to be different from the default value</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>直接复制配置即可使用，id就是上面第二步获取的用户id，也可以是自己生成的UUID<br>因为这里使用了回流，所以要在Nginx配置对应的端口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">user nginx;</span><br><span class="line">worker_processes auto;</span><br><span class="line"></span><br><span class="line">error_log /var/log/nginx/error.log notice;</span><br><span class="line">pid /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections 1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    log_format main &#x27;[$time_local] $proxy_protocol_addr &quot;$http_referer&quot; &quot;$http_user_agent&quot;&#x27;;</span><br><span class="line">    access_log /var/log/nginx/access.log main;</span><br><span class="line"></span><br><span class="line">    map $http_upgrade $connection_upgrade &#123;</span><br><span class="line">        default upgrade;</span><br><span class="line">        &quot;&quot;      close;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    map $proxy_protocol_addr $proxy_forwarded_elem &#123;</span><br><span class="line">        ~^[0-9.]+$        &quot;for=$proxy_protocol_addr&quot;;</span><br><span class="line">        ~^[0-9A-Fa-f:.]+$ &quot;for=\&quot;[$proxy_protocol_addr]\&quot;&quot;;</span><br><span class="line">        default           &quot;for=unknown&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    map $http_forwarded $proxy_add_forwarded &#123;</span><br><span class="line">        &quot;~^(,[ \\t]*)*([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+=([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+|\&quot;([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\&quot;))?(;([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+=([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+|\&quot;([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\&quot;))?)*([ \\t]*,([ \\t]*([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+=([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+|\&quot;([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\&quot;))?(;([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+=([!#$%&amp;&#x27;*+.^_`|~0-9A-Za-z-]+|\&quot;([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\&quot;))?)*)?)*$&quot; &quot;$http_forwarded, $proxy_forwarded_elem&quot;;</span><br><span class="line">        default &quot;$proxy_forwarded_elem&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        return 301 https://$host$request_uri;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 127.0.0.1:8001 proxy_protocol;</span><br><span class="line">        listen 127.0.0.1:8002 http2 proxy_protocol;</span><br><span class="line">        set_real_ip_from 127.0.0.1;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            sub_filter                         $proxy_host $host;</span><br><span class="line">            sub_filter_once                    off;</span><br><span class="line"></span><br><span class="line">            proxy_pass                         https://www.lovelive-anime.jp;</span><br><span class="line">            proxy_set_header Host              $proxy_host;</span><br><span class="line"></span><br><span class="line">            proxy_http_version                 1.1;</span><br><span class="line">            proxy_cache_bypass                 $http_upgrade;</span><br><span class="line"></span><br><span class="line">            proxy_ssl_server_name on;</span><br><span class="line"></span><br><span class="line">            proxy_set_header Upgrade           $http_upgrade;</span><br><span class="line">            proxy_set_header Connection        $connection_upgrade;</span><br><span class="line">            proxy_set_header X-Real-IP         $proxy_protocol_addr;</span><br><span class="line">            proxy_set_header Forwarded         $proxy_add_forwarded;</span><br><span class="line">            proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">            proxy_set_header X-Forwarded-Host  $host;</span><br><span class="line">            proxy_set_header X-Forwarded-Port  $server_port;</span><br><span class="line"></span><br><span class="line">            proxy_connect_timeout              60s;</span><br><span class="line">            proxy_send_timeout                 60s;</span><br><span class="line">            proxy_read_timeout                 60s;</span><br><span class="line"></span><br><span class="line">            resolver 1.1.1.1;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为在Nginx中使用了SSL，sub_filter，set_real_ip_from等模块，如果当时安置Nginx时没有编译相关模块，就要添加对应的模块：<br>进入Nginx的安置目录，执行命令，查看已经安置的模块</p>
+<blockquote>
+<p>./nginx -V</p>
+</blockquote>
+<p>如果没有包含对应的模块，进入Nginx源码目录，执行</p>
+<blockquote>
+<p>./configure –prefix=/usr/local/nginx –with-http_sub_module –with-http_stub_status_module –with-http_v2_module –with-http_ssl_module –with-http_realip_module</p>
+</blockquote>
+<p>编译【特别注意】这里不要进行make install，否则就是覆盖你之前的安装</p>
+<blockquote>
+<p>make</p>
+</blockquote>
+<p>备份原有已安装好的nginx</p>
+<blockquote>
+<p>cp /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.bak</p>
+</blockquote>
+<p>将刚刚编译好的nginx覆盖掉原有的nginx（这个时候【特别注意】这里nginx要停止状态）</p>
+<blockquote>
+<p>cp ./objs/nginx /usr/local/nginx/sbin/</p>
+</blockquote>
+<p>启动nginx，仍可以通过命令查看是否已经加入成功。<br>通过官网的Nginx配置是不能访问到网页的，我们也修改下，让通过端口能够访问到网页</p>
+<h3 id="下载伪装网站及部署"><a href="#下载伪装网站及部署" class="headerlink" title="下载伪装网站及部署"></a>下载伪装网站及部署</h3><p>默认的网站主程序文件夹在 /usr/share/nginx/html/ ，大家可以自行的替换里面的任何东西（整站程序）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/share/nginx/html/*</span><br><span class="line">cd /usr/share/nginx/html/</span><br><span class="line">wget https://github.com/V2RaySSR/Trojan/raw/master/web.zip</span><br><span class="line">unzip web.zip</span><br><span class="line">systemctl restart nginx</span><br></pre></td></tr></table></figure>
+<h3 id="修改如以下配置"><a href="#修改如以下配置" class="headerlink" title="修改如以下配置"></a>修改如以下配置</h3><p>证书和通过阿里云或者手动生成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 8001 proxy_protocol;</span><br><span class="line">	listen 8002 http2 ssl proxy_protocol;</span><br><span class="line">	listen 443 ssl;</span><br><span class="line"></span><br><span class="line">	server_name  域名;</span><br><span class="line">	#ssl on;</span><br><span class="line">	#ssl证书的pem文件路径</span><br><span class="line">	ssl_certificate  /root/ssl/xxx.pem;</span><br><span class="line">	#ssl证书的key文件路径</span><br><span class="line">	ssl_certificate_key /root/ssl/xxx.key;</span><br><span class="line">	location / &#123;</span><br><span class="line">		root /usr/share/nginx/html;</span><br><span class="line">           try_files $uri $uri/ /index.html;</span><br><span class="line">           index index.html index.htm;</span><br><span class="line">       &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">	listen 0.0.0.0:80;</span><br><span class="line">	server_name  域名;</span><br><span class="line">       return 301 https://$host$request_uri;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>然后重新Nginx<br>当然也可以直接通过Nginx转发到其它网站，这个后面在研究。</p>
+<h2 id="重启Xray"><a href="#重启Xray" class="headerlink" title="重启Xray"></a>重启Xray</h2><ul>
+<li>systemctl start xray 启动</li>
+<li>systemctl stop xray 停止</li>
+<li>systemctl restart xray 重启</li>
+<li>systemctl status  xray 启动状态</li>
+</ul>
+<h1 id="打开防火墙"><a href="#打开防火墙" class="headerlink" title="打开防火墙"></a>打开防火墙</h1><p>如果centos系统防火墙是开启的，上面第三步你用了一个端口，因此你需要打开这个端口，指令如下<br>添加开放端口</p>
+<blockquote>
+<p>firewall-cmd –zone=public –add-port=8001/tcp –permanent</p>
+</blockquote>
+<p>重载防火墙配置，不然查看开放端口都查不到，也不能用，重载配置后即可</p>
+<blockquote>
+<p>firewall-cmd –reload</p>
+</blockquote>
+<p>如果哪一天发现怎么无法使用了，有可能是IP被屏蔽，也有肯能是端口被封，这个时候就需要换个端口，别忘记防火墙开启新端口，那旧端口就可以删除了：<br>删除端口：</p>
+<blockquote>
+<p>firewall-cmd –zone=public –remove-port=8001/tcp –permanent</p>
+</blockquote>
+<h1 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h1><p>在生成证书的时候，可能需要停启Nginx和建立对应的目录。<br>可以使用xray提供的客户端配置文件去设置v2rayN安置目录里面的config.json，也可以通过图形化接口设置。如果使用v2rayN作为Windows客户的访问的时候，要记得配置底层传输方式，不然范围不通。<br><img src="/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/set.png" alt="示例"><br>访问的时候最好通过域名访问，不然可能访问失败，客户端提示：<br><img src="/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/err1.png" alt="错误1"><br>服务端的日志为：app/proxyman/inbound: connection ends &gt; proxy/vless/inbound: fallback ends &gt; proxy/vless/inbound: failed to fallback request payload &gt; tls: no certificates configured</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://v2rayssr.com/xray-nginx.html">https://v2rayssr.com/xray-nginx.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://frank2019.me/articles/2023/01/02/1672622207251.html">https://frank2019.me/articles/2023/01/02/1672622207251.html</a><br><a target="_blank" rel="noopener" href="https://acytoo.com/ladder/v2-x-ray/">https://acytoo.com/ladder/v2-x-ray/</a><br><a target="_blank" rel="noopener" href="https://v2xtls.org/xtls-vision%e4%bb%8b%e7%bb%8d%e5%8f%8a%e5%ae%89%e8%a3%85%e4%bd%bf%e7%94%a8/">https://v2xtls.org/xtls-vision%e4%bb%8b%e7%bb%8d%e5%8f%8a%e5%ae%89%e8%a3%85%e4%bd%bf%e7%94%a8/</a><br><a target="_blank" rel="noopener" href="https://www.vjsun.com/656.html">https://www.vjsun.com/656.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuan
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wofxuan.github.io/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/" title="xray的vless-xtls-vision配置">https://wofxuan.github.io/2023/03/24/xray的vless-xtls-vision配置/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/vps/" rel="tag"># vps</a>
+              <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag"># 服务器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/" rel="prev" title="Vue3 + Router4 简单使用">
+                  <i class="fa fa-chevron-left"></i> Vue3 + Router4 简单使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuan</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

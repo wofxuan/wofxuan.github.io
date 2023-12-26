@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wofxuan.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="我的需求： Vue Router 是Vue官方的路由管理器，是Vue用来实现SPA的插件。它和 Vue.js 的核心深度集成，让构建单页面应用(SPA)变得易如反掌  环境： 不同的版本可能配置不一直，当前使用的版本。 “vue”: “^3.2.13” “vue-router”: “^4.1.6”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue3 + Router4 简单使用">
+<meta property="og:url" content="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="格物致知">
+<meta property="og:description" content="我的需求： Vue Router 是Vue官方的路由管理器，是Vue用来实现SPA的插件。它和 Vue.js 的核心深度集成，让构建单页面应用(SPA)变得易如反掌  环境： 不同的版本可能配置不一直，当前使用的版本。 “vue”: “^3.2.13” “vue-router”: “^4.1.6”">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/1.png">
+<meta property="article:published_time" content="2023-03-16T06:14:38.000Z">
+<meta property="article:modified_time" content="2023-12-26T03:14:53.629Z">
+<meta property="article:author" content="xuan">
+<meta property="article:tag" content="vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/1.png">
+
+
+<link rel="canonical" href="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/","path":"2023/03/16/Vue3-Router4-简单使用/","title":"Vue3 + Router4 简单使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Vue3 + Router4 简单使用 | 格物致知</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">格物致知</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">致知在格物，物格而后知至。</p>
+      <img class="custom-logo-image" src="/uploads/logo.png" alt="格物致知">
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E9%9C%80%E6%B1%82%EF%BC%9A"><span class="nav-text">我的需求：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%EF%BC%9A"><span class="nav-text">环境：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#npm-%E5%AE%89%E8%A3%85"><span class="nav-text">npm 安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A5%E9%97%A8"><span class="nav-text">入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#src%E4%B8%8B%E6%96%B0%E5%BB%BArouter%E6%96%87%E4%BB%B6%E5%A4%B9-%E6%96%B0%E5%BB%BAindex-js%EF%BC%8C%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1%E5%99%A8%E6%A8%A1%E5%9D%97-router-index-js%EF%BC%8C%E5%86%85%E5%AE%B9%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="nav-text">src下新建router文件夹,新建index.js，定义路由器模块 router&#x2F;index.js，内容如下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E5%85%A5%E5%8F%A3%E7%9A%84main-js%E4%B8%AD%E5%BC%95%E5%85%A5%E8%B7%AF%E7%94%B1%E5%99%A8%EF%BC%8C%E5%B9%B6%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE%EF%BC%9A"><span class="nav-text">在入口的main.js中引入路由器，并进行配置：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#App-vue%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6%E6%A0%87%E7%AD%BE-%E5%92%8C%EF%BC%9A"><span class="nav-text">App.vue中使用路由组件标签 和：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-text">编辑路由组件的内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="nav-text">结果：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuan"
+      src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">xuan</p>
+  <div class="site-description" itemprop="description">天行健，君子以自强不息<br>地势坤，君子以厚德载物</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com" rel="noopener me" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/" title="简书 → https:&#x2F;&#x2F;www.jianshu.com" rel="noopener me" target="_blank">简书</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网1</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网2</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="xuan">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="格物致知">
+      <meta itemprop="description" content="天行健，君子以自强不息<br>地势坤，君子以厚德载物">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Vue3 + Router4 简单使用 | 格物致知">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue3 + Router4 简单使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-03-16 14:14:38" itemprop="dateCreated datePublished" datetime="2023-03-16T14:14:38+08:00">2023-03-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-26 11:14:53" itemprop="dateModified" datetime="2023-12-26T11:14:53+08:00">2023-12-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="我的需求："><a href="#我的需求：" class="headerlink" title="我的需求："></a>我的需求：</h1><ul>
+<li>Vue Router 是Vue官方的路由管理器，是Vue用来实现SPA的插件。它和 Vue.js 的核心深度集成，让构建单页面应用(SPA)变得易如反掌</li>
+</ul>
+<h1 id="环境："><a href="#环境：" class="headerlink" title="环境："></a><font color="#F56C6C">环境：</font></h1><ul>
+<li>不同的版本可能配置不一直，当前使用的版本。<ul>
+<li>“vue”: “^3.2.13”</li>
+<li>“vue-router”: “^4.1.6”</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<h1 id="npm-安装"><a href="#npm-安装" class="headerlink" title="npm 安装"></a>npm 安装</h1><p>执行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install vue-router@4</span><br></pre></td></tr></table></figure>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><p>注意：组件包括两种，路由组件和非路由组件，非路由组件放在components文件夹中，路由组件放在另一个文件夹中，通常命名为views或者pages。</p>
+<h2 id="src下新建router文件夹-新建index-js，定义路由器模块-router-index-js，内容如下："><a href="#src下新建router文件夹-新建index-js，定义路由器模块-router-index-js，内容如下：" class="headerlink" title="src下新建router文件夹,新建index.js，定义路由器模块 router/index.js，内容如下："></a>src下新建router文件夹,新建index.js，定义路由器模块 router/index.js，内容如下：</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import &#123;createRouter, createWebHistory&#125; from &quot;vue-router&quot;;</span><br><span class="line">import about from &quot;../views/About.vue&quot;;</span><br><span class="line">import home from &quot;../views/Home.vue&quot;;</span><br><span class="line"></span><br><span class="line">const routes = [</span><br><span class="line">    &#123;</span><br><span class="line">        path: &quot;/about&quot;,</span><br><span class="line">        name: &quot;关于&quot;,</span><br><span class="line">        component: about,</span><br><span class="line">        meta: &#123;</span><br><span class="line">            requireAuth: false,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">        path: &quot;/home&quot;,</span><br><span class="line">        name: &quot;首页&quot;,</span><br><span class="line">        component: home,</span><br><span class="line">        meta: &#123;</span><br><span class="line">            requireAuth: true,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">const router = createRouter(&#123;</span><br><span class="line">    history: createWebHistory(process.env.BASE_URL),</span><br><span class="line">    routes</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">export default router;</span><br></pre></td></tr></table></figure>
+<h2 id="在入口的main-js中引入路由器，并进行配置："><a href="#在入口的main-js中引入路由器，并进行配置：" class="headerlink" title="在入口的main.js中引入路由器，并进行配置："></a>在入口的main.js中引入路由器，并进行配置：</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import &#123;</span><br><span class="line">    createApp</span><br><span class="line">&#125; from &#x27;vue&#x27;</span><br><span class="line">import App from &#x27;./App.vue&#x27;</span><br><span class="line">import router from &#x27;./router&#x27;</span><br><span class="line"></span><br><span class="line">const app = createApp(App)</span><br><span class="line">app.use(router)</span><br><span class="line">app.mount(&#x27;#app&#x27;)</span><br></pre></td></tr></table></figure>
+<h2 id="App-vue中使用路由组件标签-和："><a href="#App-vue中使用路由组件标签-和：" class="headerlink" title="App.vue中使用路由组件标签 和："></a>App.vue中使用路由组件标签 <router-link>和<router-view>：</router-view></router-link></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;container&quot;&gt;</span><br><span class="line">    &lt;div class=&quot;row&quot;&gt;</span><br><span class="line">      &lt;div class=&quot;col-xs-offset-2 cool-xs-8&quot;&gt;</span><br><span class="line">        &lt;div class=&quot;page-header&quot;&gt;&lt;h2&gt;Router Basic - 01 &lt;/h2&gt;&lt;/div&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">    &lt;div class=&quot;row&quot;&gt;</span><br><span class="line">      &lt;div class=&quot;col-xs-2 col-xs-offset-2&quot;&gt;</span><br><span class="line">        &lt;div class=&quot;list-group&quot;&gt;</span><br><span class="line">          &lt;router-link to=&quot;/home&quot; class=&quot;list-group-item&quot;&gt;Home&lt;/router-link&gt;</span><br><span class="line">          &lt;router-link to=&quot;/about&quot; class=&quot;list-group-item&quot;&gt;About&lt;/router-link&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">      &lt;div class=&quot;col-xs-6&quot;&gt;</span><br><span class="line">        &lt;div class=&quot;panel&quot;&gt;</span><br><span class="line">          &lt;div class=&quot;panel-body&quot;&gt;</span><br><span class="line">            &lt;router-view&gt;&lt;/router-view&gt;</span><br><span class="line">          &lt;/div&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line"></span><br><span class="line">export default &#123;&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">.container &#123;</span><br><span class="line">  width: 1000px;</span><br><span class="line">  margin: 0 auto;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.router-link-active &#123;</span><br><span class="line">  color: red !important;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="编辑路由组件的内容"><a href="#编辑路由组件的内容" class="headerlink" title="编辑路由组件的内容"></a>编辑路由组件的内容</h2><p>Home.vue</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    Home</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+<p>About.vue</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    About</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;name: &quot;About.vue&quot;&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;style scoped&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h2><p><img src="/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/1.png" alt="示例"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuan
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wofxuan.github.io/2023/03/16/Vue3-Router4-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/" title="Vue3 + Router4 简单使用">https://wofxuan.github.io/2023/03/16/Vue3-Router4-简单使用/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/vue/" rel="tag"># vue</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/02/23/v2ray%E6%95%99%E7%A8%8B/" rel="prev" title="v2ray教程">
+                  <i class="fa fa-chevron-left"></i> v2ray教程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/" rel="next" title="xray的vless-xtls-vision配置">
+                  xray的vless-xtls-vision配置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuan</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
