@@ -307,6 +307,9 @@ systemctl restart nginx
 在生成证书的时候，可能需要停启Nginx和建立对应的目录。
 可以使用xray提供的客户端配置文件去设置v2rayN安置目录里面的config.json，也可以通过图形化接口设置。如果使用v2rayN作为Windows客户的访问的时候，要记得配置底层传输方式，不然范围不通。
 ![示例](./xray的vless-xtls-vision配置/set.png)
+访问的时候最好通过域名访问，不然可能访问失败，客户端提示：
+![错误1](./xray的vless-xtls-vision配置/err1.png)
+服务端的日志为：app/proxyman/inbound: connection ends > proxy/vless/inbound: fallback ends > proxy/vless/inbound: failed to fallback request payload > tls: no certificates configured
 
 参考：
 
