@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wofxuan.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="rsync介绍rsync是Liunx下的远程数据同步工具，可快速同步多台服务器间的文件和目录，并可实现增量同步以减少数据的传输。rsync有两种常用的认证方式，一种是rsync-daemon方式，另外一种是ssh方式。daemon 方式与 ssh 方式相比有以下几点不同：  1、不需要依赖远程服务器的 sshd 服务，但需要远程服务器开启 rsyncd 服务，本地 rsyncd 服务可不必开启。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rsync文件同步">
+<meta property="og:url" content="https://wofxuan.github.io/2024/04/09/rsync%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/index.html">
+<meta property="og:site_name" content="格物致知">
+<meta property="og:description" content="rsync介绍rsync是Liunx下的远程数据同步工具，可快速同步多台服务器间的文件和目录，并可实现增量同步以减少数据的传输。rsync有两种常用的认证方式，一种是rsync-daemon方式，另外一种是ssh方式。daemon 方式与 ssh 方式相比有以下几点不同：  1、不需要依赖远程服务器的 sshd 服务，但需要远程服务器开启 rsyncd 服务，本地 rsyncd 服务可不必开启。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-09T08:36:34.000Z">
+<meta property="article:modified_time" content="2024-04-09T09:37:35.589Z">
+<meta property="article:author" content="xuan">
+<meta property="article:tag" content="服务器">
+<meta property="article:tag" content="centos">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wofxuan.github.io/2024/04/09/rsync%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://wofxuan.github.io/2024/04/09/rsync%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/","path":"2024/04/09/rsync文件同步/","title":"rsync文件同步"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>rsync文件同步 | 格物致知</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">格物致知</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">致知在格物，物格而后知至。</p>
+      <img class="custom-logo-image" src="/uploads/logo.png" alt="格物致知">
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#rsync%E4%BB%8B%E7%BB%8D"><span class="nav-text">rsync介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85rsync"><span class="nav-text">安装rsync</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%87%86%E5%A4%87"><span class="nav-text">服务器准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="nav-text">远程服务器配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E9%85%8D%E7%BD%AErsyncd-conf"><span class="nav-text">1、配置rsyncd.conf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E8%BE%93%E5%85%A5%E4%BB%A5%E4%B8%8B%E5%86%85%E5%AE%B9%EF%BC%8C%E9%83%A8%E5%88%86%E5%86%85%E5%AE%B9%E5%8F%AF%E6%A0%B9%E6%8D%AE%E6%83%85%E5%86%B5%E8%BF%9B%E8%A1%8C%E8%B0%83%E6%95%B4"><span class="nav-text">2、输入以下内容，部分内容可根据情况进行调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E5%88%9B%E5%BB%BArsync%E7%94%A8%E6%88%B7"><span class="nav-text">3、创建rsync用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD%E5%82%A8%E5%AD%98%E7%9B%AE%E5%BD%95%E5%B9%B6%E4%BF%AE%E6%94%B9%E5%B1%9E%E6%80%A7"><span class="nav-text">4、创建数据备份储存目录并修改属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E3%80%81%E5%88%9B%E5%BB%BA%E8%AE%A4%E8%AF%81%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E6%96%87%E4%BB%B6"><span class="nav-text">5、创建认证用户密码文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6%E3%80%81%E5%90%AF%E5%8A%A8rsync%E6%9C%8D%E5%8A%A1"><span class="nav-text">6、启动rsync服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7%E3%80%81%E6%A3%80%E6%9F%A5%E6%9C%8D%E5%8A%A1%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C"><span class="nav-text">7、检查服务是否正常运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="nav-text">本地服务器配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%AE%A4%E8%AF%81%E6%96%87%E4%BB%B6"><span class="nav-text">创建认证文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%87%B3%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88%E4%BA%A4%E4%BA%92%E5%BC%8F%EF%BC%89"><span class="nav-text">本地服务器同步至远程服务器（交互式）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%87%B3%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88%E5%85%8D%E4%BA%A4%E4%BA%92%E5%BC%8F%EF%BC%89"><span class="nav-text">本地服务器同步至远程服务器（免交互式）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%87%B3%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">远程服务器同步至本地服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0"><span class="nav-text">参数</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuan"
+      src="/uploads/avatar.jpg">
+  <p class="site-author-name" itemprop="name">xuan</p>
+  <div class="site-description" itemprop="description">天行健，君子以自强不息<br>地势坤，君子以厚德载物</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com" rel="noopener me" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/" title="简书 → https:&#x2F;&#x2F;www.jianshu.com" rel="noopener me" target="_blank">简书</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网1</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://wofxuan.github.io/" title="https:&#x2F;&#x2F;wofxuan.github.io">我的官网2</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wofxuan.github.io/2024/04/09/rsync%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="name" content="xuan">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="格物致知">
+      <meta itemprop="description" content="天行健，君子以自强不息<br>地势坤，君子以厚德载物">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="rsync文件同步 | 格物致知">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          rsync文件同步
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-04-09 16:36:34 / 修改时间：17:37:35" itemprop="dateCreated datePublished" datetime="2024-04-09T16:36:34+08:00">2024-04-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="rsync介绍"><a href="#rsync介绍" class="headerlink" title="rsync介绍"></a>rsync介绍</h1><p>rsync是Liunx下的远程数据同步工具，可快速同步多台服务器间的文件和目录，并可实现增量同步以减少数据的传输。<br>rsync有两种常用的认证方式，一种是rsync-daemon方式，另外一种是ssh方式。<br>daemon 方式与 ssh 方式相比有以下几点不同：</p>
+<ul>
+<li>1、不需要依赖远程服务器的 sshd 服务，但需要远程服务器开启 rsyncd 服务，本地 rsyncd 服务可不必开启。</li>
+<li>2、不直接使用远程服务器的真实系统账号，而是虚拟账号和虚拟密码，且可实现无需手动输入密码，同时配置模块对远程同步的目录进行限制。</li>
+<li>3、对比 ssh 方式，daemon方式安全性更高。</li>
+</ul>
+<h1 id="安装rsync"><a href="#安装rsync" class="headerlink" title="安装rsync"></a>安装rsync</h1><p>CentOS 7.x及以上的版本默认已安装rsync，可以通过命令查看是否安装成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa |grep rsync</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rsync-3.1.2-12.el7_9.x86_64 表示已安装</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如未安装可通过以下命令进行安装</span></span><br><span class="line">yum -y install rsync</span><br></pre></td></tr></table></figure>
+
+<h1 id="服务器准备"><a href="#服务器准备" class="headerlink" title="服务器准备"></a>服务器准备</h1><ul>
+<li>远程服务器192.168.1.1，提供服务，需开启并配置rsyncd</li>
+<li>本地服务器192.168.1.2，无需开启配置rsyncd</li>
+</ul>
+<p>**你存在的意义，诠释了我仓促青春里的爱情水。<br>这里写一句鼓励自己的话,可以加一个颜色(可选)]</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="远程服务器配置"><a href="#远程服务器配置" class="headerlink" title="远程服务器配置"></a>远程服务器配置</h1><h2 id="1、配置rsyncd-conf"><a href="#1、配置rsyncd-conf" class="headerlink" title="1、配置rsyncd.conf"></a>1、配置rsyncd.conf</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/rsyncd.conf</span><br></pre></td></tr></table></figure>
+<h2 id="2、输入以下内容，部分内容可根据情况进行调整"><a href="#2、输入以下内容，部分内容可根据情况进行调整" class="headerlink" title="2、输入以下内容，部分内容可根据情况进行调整"></a>2、输入以下内容，部分内容可根据情况进行调整</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以 rsync 用户启动进程</span></span><br><span class="line">uid = rsync</span><br><span class="line">gid = rsync</span><br><span class="line"></span><br><span class="line"><span class="comment"># 无需让rsync以root身份运行，允许接收文件的完整属性</span></span><br><span class="line">fake super = <span class="built_in">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁锢推送的数据至某个目录，不允许跳出该目录</span></span><br><span class="line"><span class="comment"># 允许chroot，提升安全性，客户端连接模块，首先chroot到模块path参数指定的目录下</span></span><br><span class="line"><span class="comment"># chroot为yes时必须使用root权限，且不能备份path路径外的链接文件</span></span><br><span class="line">use <span class="built_in">chroot</span> = no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最大连接数</span></span><br><span class="line">max connections = 200</span><br><span class="line"></span><br><span class="line"><span class="comment"># 超时时间</span></span><br><span class="line"><span class="built_in">timeout</span> = 300</span><br><span class="line"></span><br><span class="line"><span class="comment"># pid文件路径</span></span><br><span class="line">pid file = /var/run/rsyncd.pid</span><br><span class="line"></span><br><span class="line"><span class="comment"># 锁文件路径</span></span><br><span class="line">lock file = /var/run/rsync.lock</span><br><span class="line"></span><br><span class="line"><span class="comment"># 剔除某些文件或目录不同步</span></span><br><span class="line">exclude = lost+found/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 记录传输文件日志</span></span><br><span class="line">transfer logging = <span class="built_in">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定日志文件</span></span><br><span class="line"><span class="built_in">log</span> file = /var/log/rsyncd.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志文件格式</span></span><br><span class="line"><span class="built_in">log</span> format = %t %a %m %f %b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 忽略错误信息</span></span><br><span class="line">ignore errors</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对备份数据可读写</span></span><br><span class="line"><span class="built_in">read</span> only = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 不允许查看模块信息</span></span><br><span class="line">list = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义虚拟用户，作为连接认证用户</span></span><br><span class="line">auth <span class="built_in">users</span> = rsync_backup</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义rsync服务用户连接认证密码文件路径</span></span><br><span class="line">secrets file = /etc/rsync.password</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置不需要压缩的文件</span></span><br><span class="line">dont compress = *.gz *.tgz *.zip *.z *.Z *.rpm *.deb *.bz2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义模块信息</span></span><br><span class="line">[backup]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模块注释信息</span></span><br><span class="line">comment = <span class="string">&quot;backup dir&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义备份数据目录，此处根据实际调整</span></span><br><span class="line">path = /backup/test/</span><br></pre></td></tr></table></figure>
+<h2 id="3、创建rsync用户"><a href="#3、创建rsync用户" class="headerlink" title="3、创建rsync用户"></a>3、创建rsync用户</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id rsync</span><br><span class="line"># 可能返回 id: rsync: No such user</span><br><span class="line"></span><br><span class="line">useradd -s /sbin/nologin -M rsync</span><br><span class="line">#（-s创建用户shell，/sbin/nologin表示不登录，—M rsync表示不创建用户rsync家目录）</span><br></pre></td></tr></table></figure>
+<h2 id="4、创建数据备份储存目录并修改属性"><a href="#4、创建数据备份储存目录并修改属性" class="headerlink" title="4、创建数据备份储存目录并修改属性"></a>4、创建数据备份储存目录并修改属性</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 创建的目录 /backup/test/ 要于第2步配置文件中rsyncd.conf的path相同</span><br><span class="line"></span><br><span class="line">mkdir /backup/test/</span><br><span class="line">chown -R rsync:rsync /backup/</span><br></pre></td></tr></table></figure>
+<p><font color="#F56C6C">必须要从根路径赋值权限，不然在有子目录传输的时候会报权限错误</font></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2024/04/09 15:34:56 [1893] params.c:Parameter() - Ignoring badly formed line in config file: ignore errors</span><br><span class="line">2024/04/09 15:34:56 [1893] name lookup failed for x.x.x.x: Name or service not known</span><br><span class="line">2024/04/09 15:34:56 [1893] connect from UNKNOWN (x.x.x.x)</span><br><span class="line">2024/04/09 15:34:56 [1893] rsync on backup/x/x.jpg from rsync_backup@UNKNOWN (x)</span><br><span class="line">2024/04/09 15:34:56 [1893] building file list</span><br><span class="line">2024/04/09 15:34:56 [1893] rsync: change_dir &quot;/x&quot; (in backup) failed: Permission denied (13)</span><br></pre></td></tr></table></figure>
+<h2 id="5、创建认证用户密码文件"><a href="#5、创建认证用户密码文件" class="headerlink" title="5、创建认证用户密码文件"></a>5、创建认证用户密码文件</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">命令中用户rsync_backup必须与/etc/rsync.password里定义虚拟用户名一致</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">命令中test123为认证用户的密码，根据实际进行调整</span></span><br><span class="line"></span><br><span class="line">echo &quot;rsync_backup:test123&quot; &gt;&gt; /etc/rsync.password</span><br><span class="line"></span><br><span class="line">chmod 600 /etc/rsync.password</span><br></pre></td></tr></table></figure>
+<h2 id="6、启动rsync服务"><a href="#6、启动rsync服务" class="headerlink" title="6、启动rsync服务"></a>6、启动rsync服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rsync --daemon</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如需关闭，输入命令 pkill rsync，则服务停止</span></span><br></pre></td></tr></table></figure>
+<h2 id="7、检查服务是否正常运行"><a href="#7、检查服务是否正常运行" class="headerlink" title="7、检查服务是否正常运行"></a>7、检查服务是否正常运行</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ps -ef |grep rsync</span><br><span class="line">netstat -antlp |grep rsync</span><br><span class="line"># 如netstat未安装，可通过命令进行安装 yum install net-tools</span><br><span class="line">tcp        0      0 0.0.0.0:873             0.0.0.0:*               LISTEN      1911/rsync          </span><br><span class="line">tcp        0 128001 10.0.144.2:873          74.48.74.39:47446       ESTABLISHED 1948/rsync          </span><br><span class="line">tcp6       0      0 :::873                  :::*                    LISTEN      1911/rsync     </span><br></pre></td></tr></table></figure>
+<h1 id="本地服务器配置"><a href="#本地服务器配置" class="headerlink" title="本地服务器配置"></a>本地服务器配置</h1><h2 id="创建认证文件"><a href="#创建认证文件" class="headerlink" title="创建认证文件"></a>创建认证文件</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 命令中test123为远程服务器认证用户的密码，需保持一致</span><br><span class="line">echo &quot;test123&quot; &gt;&gt; /etc/rsync.password</span><br><span class="line">chmod 600 /etc/rsync.password</span><br></pre></td></tr></table></figure>
+<h2 id="本地服务器同步至远程服务器（交互式）"><a href="#本地服务器同步至远程服务器（交互式）" class="headerlink" title="本地服务器同步至远程服务器（交互式）"></a>本地服务器同步至远程服务器（交互式）</h2><p>交互式每次提交时需要手动输入认证用户的密码，本例中为test123</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -aRvuz /home/ rsync_backup@192.168.1.1::backup</span><br></pre></td></tr></table></figure>
+<h2 id="本地服务器同步至远程服务器（免交互式）"><a href="#本地服务器同步至远程服务器（免交互式）" class="headerlink" title="本地服务器同步至远程服务器（免交互式）"></a>本地服务器同步至远程服务器（免交互式）</h2><p>免交互式因已配置/etc/rsync.password文件，每次提交时无需输入密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -aRvuz /home/ rsync_backup@192.168.1.1::backup --password-file=/etc/rsync.password</span><br></pre></td></tr></table></figure>
+<h2 id="远程服务器同步至本地服务器"><a href="#远程服务器同步至本地服务器" class="headerlink" title="远程服务器同步至本地服务器"></a>远程服务器同步至本地服务器</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 交互式需手动输入认证用户密码，本例中为test123</span><br><span class="line">rsync -aRvuz rsync_backup@192.168.1.1::backup /home/</span><br><span class="line"></span><br><span class="line"># 免交互式无需输入密码</span><br><span class="line">rsync -aRvuz rsync_backup@192.168.1.1::backup /home/ --password-file=/etc/rsync.password</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<blockquote>
+<p>源目录加了斜线，效果就是将该目录下的内容传输到目标目录下，如/test/表示将目录test下(不含test目录本身)的文件及目录同步至目标目录<br>源目录不加斜线，效果就是将该目录传输到目标目录下，如/test表示将目录test(含test目录本身)的文件及目录同步至目标目录<br>目标目录如果不存在，会自动创建目标目录</p>
+</blockquote>
+<h1 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h1><p>常用参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-v, --verbose详细模式输出</span><br><span class="line">-a, --archive归档模式，表示以递归方式传输文件，并保持所有文件属性不变</span><br><span class="line">-u, --update 仅仅进行更新，也就是跳过已经存在的目标位置，并且文件时间要晚于要备份的文件，不覆盖新的文件</span><br><span class="line">-z,--compress对备份的文件在传输时进行压缩处理</span><br><span class="line">--delete，删除那些目标目录中存在而在源目录中没有的文件</span><br><span class="line">--exclude=PATTERN，指定排除不需要传输的文件模式</span><br></pre></td></tr></table></figure>
+<p>全部参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">-v, --verbose 详细模式输出</span><br><span class="line">-q, --quiet 精简输出模式</span><br><span class="line">-c, --checksum 打开校验开关，强制对文件传输进行校验</span><br><span class="line">-a, --archive 归档模式，表示以递归方式传输文件，并保持所有文件属性，等于-rlptgoD</span><br><span class="line">-r, --recursive 对子目录以递归模式处理</span><br><span class="line">-R, --relative 使用相对路径信息</span><br><span class="line"># rsync foo/bar/foo.c remote:/tmp/      ## Rsync 参数在/tmp目录下创建foo.c文件，而如果使用-R参数：</span><br><span class="line"># rsync -R foo/bar/foo.c remote:/tmp/   ## Rsync 参数会创建文件/tmp/foo/bar/foo.c，也就是会保持完全路径信息。</span><br><span class="line">-b, --backup 创建备份，也就是对于目的已经存在有同样的文件名时，将老的文件重新命名为~filename。可以使用--suffix选项来指定不同的备份文件前缀。</span><br><span class="line">--backup-dir 将备份文件(如~filename)存放在在目录下。</span><br><span class="line">-suffix=SUFFIX 定义备份文件前缀</span><br><span class="line">-u, --update 仅仅进行更新，也就是跳过所有已经存在于DST，并且文件时间晚于要备份的文件。(不覆盖更新的文件)</span><br><span class="line">-l, --links 保留软链结</span><br><span class="line">-L, --copy-links 想对待常规文件一样处理软链结</span><br><span class="line">--copy-unsafe-links 仅仅拷贝指向SRC路径目录树以外的链结</span><br><span class="line">--safe-links 忽略指向SRC路径目录树以外的链结</span><br><span class="line">-k, --copy-dirlinks  transform symlink to a dir into referent dir</span><br><span class="line">-K, --keep-dirlinks  treat symlinked dir on receiver as dir</span><br><span class="line">-H, --hard-links 保留硬链结</span><br><span class="line">-p, --perms 保持文件权限</span><br><span class="line">-o, --owner 保持文件属主信息</span><br><span class="line">-g, --group 保持文件属组信息</span><br><span class="line">-D, --devices 保持设备文件信息</span><br><span class="line">-t, --times 保持文件时间信息</span><br><span class="line">-S, --sparse 对稀疏文件进行特殊处理以节省DST的空间</span><br><span class="line">-n, --dry-run现实哪些文件将被传输</span><br><span class="line">-W, --whole-file 拷贝文件，不进行增量检测</span><br><span class="line">-x, --one-file-system 不要跨越文件系统边界</span><br><span class="line">-B, --block-size=SIZE 检验算法使用的块尺寸，默认是700字节</span><br><span class="line">-e, --rsh=COMMAND 指定替代rsh的shell程序</span><br><span class="line">--rsync-path=PATH 指定远程服务器上的rsync命令所在路径信息</span><br><span class="line">-C, --cvs-exclude 使用和CVS一样的方法自动忽略文件，用来排除那些不希望传输的文件</span><br><span class="line">--existing 仅仅更新那些已经存在于DST的文件，而不备份那些新创建的文件</span><br><span class="line">--delete 删除那些DST中SRC没有的文件</span><br><span class="line">--delete-excluded 同样删除接收端那些被该选项指定排除的文件</span><br><span class="line">--delete-after 传输结束以后再删除</span><br><span class="line">--ignore-errors 及时出现IO错误也进行删除</span><br><span class="line">--max-delete=NUM 最多删除NUM个文件</span><br><span class="line">--partial 保留那些因故没有完全传输的文件，以是加快随后的再次传输</span><br><span class="line">--force 强制删除目录，即使不为空</span><br><span class="line">--numeric-ids 不将数字的用户和组ID匹配为用户名和组名</span><br><span class="line">--timeout=TIME IP超时时间，单位为秒</span><br><span class="line">-I, --ignore-times 不跳过那些有同样的时间和长度的文件</span><br><span class="line">--size-only 当决定是否要备份文件时，仅仅察看文件大小而不考虑文件时间</span><br><span class="line">--modify-window=NUM 决定文件是否时间相同时使用的时间戳窗口，默认为0</span><br><span class="line">-T --temp-dir=DIR 在DIR中创建临时文件</span><br><span class="line">--compare-dest=DIR 同样比较DIR中的文件来决定是否需要备份</span><br><span class="line">-P 等同于 --partial</span><br><span class="line">--progress 显示备份过程</span><br><span class="line">-z, --compress 对备份的文件在传输时进行压缩处理</span><br><span class="line">--exclude=PATTERN 指定排除不需要传输的文件模式</span><br><span class="line">--include=PATTERN 指定不排除而需要传输的文件模式</span><br><span class="line">--exclude-from=FILE 排除FILE中指定模式的文件</span><br><span class="line">--include-from=FILE 不排除FILE指定模式匹配的文件</span><br><span class="line">--version 打印版本信息</span><br><span class="line">--address 绑定到特定的地址</span><br><span class="line">--config=FILE 指定其他的配置文件，不使用默认的rsyncd.conf文件</span><br><span class="line">--port=PORT 指定其他的rsync服务端口</span><br><span class="line">--blocking-io 对远程shell使用阻塞IO</span><br><span class="line">-stats 给出某些文件的传输状态</span><br><span class="line">--progress 在传输时现实传输过程</span><br><span class="line">--log-format=FORMAT 指定日志文件格式</span><br><span class="line">--password-file=FILE 从FILE中得到密码</span><br><span class="line">--bwlimit=KBPS 限制I/O带宽，KBytes per second</span><br><span class="line">-h, --help 显示帮助信息</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuan
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://wofxuan.github.io/2024/04/09/rsync%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/" title="rsync文件同步">https://wofxuan.github.io/2024/04/09/rsync文件同步/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag"># 服务器</a>
+              <a href="/tags/centos/" rel="tag"># centos</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/03/24/xray%E7%9A%84vless-xtls-vision%E9%85%8D%E7%BD%AE/" rel="prev" title="xray的vless-xtls-vision配置">
+                  <i class="fa fa-chevron-left"></i> xray的vless-xtls-vision配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuan</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
